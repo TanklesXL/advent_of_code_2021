@@ -20,5 +20,5 @@ pub fn day_2_test() {
 
 pub fn day_3_test() {
   assert Ok(data) = file.read_file("input/day_3.txt")
-  assert #(2498354, 0) = day_3.run(data)
+  assert #(2498354, 3277956) = day_3.run(data)
 }
