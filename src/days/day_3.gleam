@@ -1,12 +1,12 @@
 import gleam/string
-import gleam/map.{Map}
+import gleam/map
 import gleam/list
 import gleam/int.{InvalidBase}
 import gleam/io
 import gleam/result
 import gleam/pair
 import gleam/function
-import gleam/order.{Eq, Gt, Lt}
+import gleam/order
 import ffi/array.{Array}
 
 pub fn run(input) {
@@ -104,7 +104,7 @@ fn do_undigits(
 ) -> Result(Int, InvalidBase) {
   case numbers {
     [] -> Ok(acc)
-    [digit, .._rest] if digit >= base -> Error(InvalidBase)
+    [digit, ..] if digit >= base -> Error(InvalidBase)
     [digit, ..rest] -> do_undigits(rest, base, acc * base + digit)
   }
 }

@@ -4,10 +4,10 @@ import gleam/list
 import gleam/int
 import gleam/pair
 import gleam/result
-import gleam/iterator.{Iterator}
+import gleam/iterator
 import gleam/function.{compose}
 import gleam/map.{Map}
-import gleam/option.{None, Option, Some}
+import gleam/option
 import gleam/set.{Set}
 
 pub fn run(input) {
