@@ -1,12 +1,6 @@
 import gleam/string
-import gleam/map
 import gleam/list
 import gleam/int.{InvalidBase}
-import gleam/io
-import gleam/result
-import gleam/pair
-import gleam/function
-import gleam/order
 import ffi/array.{Array}
 
 pub fn run(input) {

@@ -1,6 +1,4 @@
-import gleam/list
 import gleam/int
-import gleam/io
 import gleam/iterator.{Iterator}
 import gleam/string
 

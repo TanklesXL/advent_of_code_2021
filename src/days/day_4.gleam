@@ -1,13 +1,10 @@
 import gleam/string
-import gleam/io
 import gleam/list
 import gleam/int
-import gleam/pair
 import gleam/result
 import gleam/iterator
 import gleam/function.{compose}
 import gleam/map.{Map}
-import gleam/option
 import gleam/set.{Set}
 
 pub fn run(input) {
@@ -39,10 +36,10 @@ fn process_input(input) {
     boards
     |> iterator.from_list()
     |> iterator.map(string.split(_, "\n"))
-    |> iterator.map(list.map(
-      _,
-      compose(string.split(_, " "), list.filter_map(_, int.parse)),
-    ))
+    |> iterator.map(list.map(_, compose(
+      string.split(_, " "),
+      list.filter_map(_, int.parse),
+    )))
     |> iterator.map(build_board)
     |> iterator.map(Play)
     |> iterator.to_list()
@@ -50,24 +47,36 @@ fn process_input(input) {
   #(calls, boards)
 }
 
-fn build_board(data: List(List(Int))) -> Board {
+fn nested_index_fold(
+  outer_list: List(List(a)),
+  acc: b,
+  f: fn(b, a, Int, Int) -> b,
+) -> b {
   list.index_fold(
-    over: data,
-    from: Board(spaces: map.new(), hits: set.new()),
-    with: fn(board, row_data, row_idx) {
+    over: outer_list,
+    from: acc,
+    with: fn(acc, inner_list, outer_idx) {
       list.index_fold(
-        over: row_data,
-        from: board,
-        with: fn(board, value, col_idx) {
-          Board(
-            ..board,
-            spaces: map.insert(
-              board.spaces,
-              value,
-              Pos(row: row_idx, column: col_idx),
-            ),
-          )
-        },
+        over: inner_list,
+        from: acc,
+        with: fn(acc, elem, inner_idx) { f(acc, elem, outer_idx, inner_idx) },
+      )
+    },
+  )
+}
+
+fn build_board(data: List(List(Int))) -> Board {
+  nested_index_fold(
+    data,
+    Board(spaces: map.new(), hits: set.new()),
+    fn(board, elem, row_idx, col_idx) {
+      Board(
+        ..board,
+        spaces: map.insert(
+          board.spaces,
+          elem,
+          Pos(row: row_idx, column: col_idx),
+        ),
       )
     },
   )
@@ -97,20 +106,19 @@ fn hit(game: Play, value: Int) -> Play {
 //   [Pos(0, 4), Pos(1, 3), Pos(2, 2), Pos(3, 1), Pos(4, 0)],
 // ]
 fn check_bingo(with hits: Set(Pos), for pos: Pos) -> Bool {
-  let bingo_row =
-    iterator.range(0, 5)
+  let indices = iterator.range(0, 5)
+  let bingo_row = fn() {
+    indices
     |> iterator.map(Pos(row: pos.row, column: _))
     |> iterator.all(set.contains(hits, _))
-
-  let bingo_col =
-    iterator.range(0, 5)
+  }
+  let bingo_column = fn() {
+    indices
     |> iterator.map(Pos(row: _, column: pos.column))
     |> iterator.all(set.contains(hits, _))
+  }
 
-  // let bingo_diagonal =
-  //   list.any(diagonal_positions, list.all(_, set.contains(hits, _)))
-  // bingo_diagonal ||
-  bingo_row || bingo_col
+  bingo_row() || bingo_column()
 }
 
 fn pt_1(calls: List(Int), boards: List(Play)) -> Int {
@@ -130,6 +138,6 @@ fn pt_1(calls: List(Int), boards: List(Play)) -> Int {
   }
 }
 
-fn pt_2(input: String) -> Int {
+fn pt_2(_input: String) -> Int {
   0
 }

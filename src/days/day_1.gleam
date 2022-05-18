@@ -1,7 +1,5 @@
 import gleam/list
 import gleam/int
-import gleam/io
-import gleam/iterator
 import gleam/string
 
 pub fn run(input) {
